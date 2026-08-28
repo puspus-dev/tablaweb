@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
-import type { IncomingMessage, ServerResponse } from 'node:http'
+import type { ServerResponse } from 'node:http'
 import https from 'node:https'
 
 /**
@@ -97,9 +97,10 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on('error', (err, _req, res) => {
             console.error('[proxy /global]', err.message)
-            if (res && !res.headersSent) {
-              res.writeHead(502, { 'Content-Type': 'text/plain' })
-              res.end('Institute list proxy error')
+            const httpRes = res as ServerResponse
+            if (httpRes && !httpRes.headersSent) {
+              httpRes.writeHead(502, { 'Content-Type': 'text/plain' })
+              httpRes.end('Institute list proxy error')
             }
           })
         },
