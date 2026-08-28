@@ -120,8 +120,8 @@ export async function fetchInstitutes(): Promise<Institute[]> {
       'eKretaStudent/264745 CFNetwork/1494.0.7 Darwin/23.4.0',
   };
   const urls = [
-    'https://kretaglobalapi.e-kreta.hu/intezmenyek/kreta/publikus',
     'https://kretaglobalmobileapi2.ekreta.hu/api/v3/Institute',
+    'https://kretaglobalapi.e-kreta.hu/intezmenyek/kreta/publikus',
     'https://kretaglobalmobileapi.ekreta.hu/api/v1/Institute',
   ];
 
