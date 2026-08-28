@@ -4,8 +4,8 @@ export interface Institute {
   city: string;
 }
 
-/** Felhasználói / közösségi lista – elsődleges forrás */
-const CUSTOM_LIST = '/sulinet/iskolak-v1.json';
+/** reSulinetes forrás (lehet elavult, ezért van lent még a krétás is hozzáadva) */
+const CUSTOM_LIST = 'https://sulinet.site.je/iskolak-v1.json';
 
 let cache: Institute[] | null = null;
 
@@ -120,10 +120,9 @@ export async function fetchInstitutes(): Promise<Institute[]> {
       'eKretaStudent/264745 CFNetwork/1494.0.7 Darwin/23.4.0',
   };
   const urls = [
-    '/global/intezmenyek/kreta/publikus',
-    '/global-mobile/api/v3/Institute',
-    '/global-mobile/api/v1/Institute',
-    '/global-mobile-old/api/v1/Institute',
+    'https://kretaglobalapi.e-kreta.hu/intezmenyek/kreta/publikus',
+    'https://kretaglobalmobileapi2.ekreta.hu/api/v3/Institute',
+    'https://kretaglobalmobileapi.ekreta.hu/api/v1/Institute',
   ];
 
   for (const url of urls) {
