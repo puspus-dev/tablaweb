@@ -14,7 +14,6 @@ interface Props {
   onRefresh?: () => void;
   refreshing?: boolean;
   studentName?: string;
-  onLogout?: () => void;
   errors?: string[];
 }
 
@@ -31,7 +30,6 @@ export function WeekCalendar({
   onRefresh,
   refreshing,
   studentName,
-  onLogout,
   errors,
 }: Props) {
   const [weekStart, setWeekStart] = useState(() =>
