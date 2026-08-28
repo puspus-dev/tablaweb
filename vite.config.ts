@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig, type Plugin } from 'vite'
-import type { IncomingMessage, ServerResponse } from 'node:http'
+import { ServerResponse } from 'node:http'
 import https from 'node:https'
 
 /**
@@ -86,6 +86,15 @@ export default defineConfig({
         proxyTimeout: 15000,
         rewrite: (path) => path.replace(/^\/sulinet/, ''),
       },
+      // Intézménykereső (élő autocomplete, nem kell API kulcs)
+      '/institute-selector': {
+        target: 'https://intezmenykereso.e-kreta.hu',
+        changeOrigin: true,
+        secure: true,
+        timeout: 15000,
+        proxyTimeout: 15000,
+        rewrite: (path) => path.replace(/^\/institute-selector/, ''),
+      },
       // Intézménylista (új publikus API)
       '/global': {
         target: 'https://kretaglobalapi.e-kreta.hu',
@@ -97,7 +106,7 @@ export default defineConfig({
         configure: (proxy) => {
           proxy.on('error', (err, _req, res) => {
             console.error('[proxy /global]', err.message)
-            if (res && !res.headersSent) {
+            if (res instanceof ServerResponse && !res.headersSent) {
               res.writeHead(502, { 'Content-Type': 'text/plain' })
               res.end('Institute list proxy error')
             }
