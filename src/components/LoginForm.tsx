@@ -4,6 +4,7 @@ import {
   fetchInstitutes,
   filterInstitutes,
   resolveInstituteCode,
+  searchInstitutesFromKreta,
   type Institute,
 } from '../api/institutes';
 
@@ -30,6 +31,7 @@ export function LoginForm({
   const [institutesError, setInstitutesError] = useState<string | null>(null);
 
   const [query, setQuery] = useState('');
+  const [remoteResults, setRemoteResults] = useState<Institute[]>([]);
   const [selected, setSelected] = useState<Institute | null>(null);
   const [showList, setShowList] = useState(false);
   const [username, setUsername] = useState('');
@@ -62,10 +64,38 @@ export function LoginForm({
     };
   }, []);
 
-  const filtered = useMemo(
+  // Élő keresés a KRÉTA saját intézménykeresőjén – ezt próbáljuk először,
+  // mert nem kell hozzá API kulcs; a lenti helyi lista csak kiegészíti.
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 3) {
+      setRemoteResults([]);
+      return;
+    }
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      searchInstitutesFromKreta(q).then((list) => {
+        if (!cancelled) setRemoteResults(list);
+      });
+    }, 300);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [query]);
+
+  const localFiltered = useMemo(
     () => filterInstitutes(institutes, query),
     [institutes, query]
   );
+  const filtered = useMemo(() => {
+    if (remoteResults.length === 0) return localFiltered;
+    const seen = new Set(remoteResults.map((i) => i.code.toLowerCase()));
+    return [
+      ...remoteResults,
+      ...localFiltered.filter((i) => !seen.has(i.code.toLowerCase())),
+    ].slice(0, 40);
+  }, [remoteResults, localFiltered]);
 
   function pickInstitute(inst: Institute) {
     setSelected(inst);

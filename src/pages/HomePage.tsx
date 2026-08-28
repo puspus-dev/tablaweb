@@ -30,8 +30,8 @@ export function HomePage({
 }: Props) {
   const todayLessons = useMemo(() => {
     return events
-      .filter((e) => e.type === 'lesson' && e.start && isToday(parseISO(e.start)))
-      .sort((a, b) => (a.start || '').localeCompare(b.start || ''));
+      .filter((e) => e.type === 'lesson' && isToday(e.start))
+      .sort((a, b) => a.start.getTime() - b.start.getTime());
   }, [events]);
 
   const recentGrades = useMemo(() => {
@@ -83,15 +83,17 @@ export function HomePage({
                 className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 flex gap-3"
               >
                 <div className="text-xs font-mono text-slate-500 w-16 shrink-0 pt-0.5">
-                  {l.start ? format(parseISO(l.start), 'HH:mm') : '—'}
-                  {l.end ? `–${format(parseISO(l.end), 'HH:mm')}` : ''}
+                  {format(l.start, 'HH:mm')}
+                  {l.end ? `–${format(l.end, 'HH:mm')}` : ''}
                 </div>
                 <div className="min-w-0">
                   <div className="font-medium text-slate-900 dark:text-white truncate">
                     {l.title}
                   </div>
-                  {l.subtitle && (
-                    <div className="text-xs text-slate-500 truncate">{l.subtitle}</div>
+                  {(l.teacher || l.room) && (
+                    <div className="text-xs text-slate-500 truncate">
+                      {[l.teacher, l.room].filter(Boolean).join(' · ')}
+                    </div>
                   )}
                 </div>
               </li>
